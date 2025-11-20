@@ -1,121 +1,569 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partner Energético | Optimización de Facturas</title>
-    <meta name="description" content="Auditoría gratuita de facturas de luz y gas. Sin costes, sin compromiso." />
+    <meta name="description" content="Auditoría gratuita de facturas de luz y gas. Sin costes, sin compromiso.">
     
-    <!-- Google Fonts: Syne (Headings) and Inter (Body) for that modern aesthetic -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Syne', 'sans-serif'],
-            },
-            colors: {
-              neon: {
-                green: '#ccff00',
-                cyan: '#00ffff',
-                purple: '#bc13fe',
-              },
-              dark: {
-                900: '#050505',
-                800: '#0a0a0a',
-                700: '#121212',
-              }
-            },
-            backgroundImage: {
-              'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
-            },
-            animation: {
-              'text-shimmer': 'text-shimmer 3s linear infinite',
-              'blob': 'blob 10s infinite',
-              'drift': 'drift 20s infinite linear',
-            },
-            keyframes: {
-              'text-shimmer': {
-                '0%': { backgroundPosition: '0% 50%' },
-                '100%': { backgroundPosition: '200% 50%' },
-              },
-              blob: {
-                '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                '100%': { transform: 'translate(0px, 0px) scale(1)' },
-              },
-              drift: {
-                '0%': { transform: 'translateY(0) rotate(0deg)' },
-                '100%': { transform: 'translateY(-100px) rotate(360deg)' }
-              }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: {
+                            green: '#ccff00',
+                            cyan: '#00ffff',
+                            purple: '#bc13fe',
+                        },
+                        dark: {
+                            900: '#050505',
+                            800: '#0a0a0a',
+                            700: '#121212',
+                        }
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                    },
+                    animation: {
+                        'text-shimmer': 'text-shimmer 3s linear infinite',
+                        'blob': 'blob 10s infinite',
+                    },
+                    keyframes: {
+                        'text-shimmer': {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '100%': { backgroundPosition: '200% 50%' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
             }
-          },
-        },
-      }
+        }
     </script>
+
+    <!-- Three.js & Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-      body {
-        background-color: #050505;
-        color: #ffffff;
-        overflow-x: hidden;
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #050505;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #333;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #ccff00;
-      }
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .shimmer-text {
-        background-size: 200% auto;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      /* Animation delays */
-      .animation-delay-2000 {
-        animation-delay: 2s;
-      }
-      .animation-delay-4000 {
-        animation-delay: 4s;
-      }
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ccff00; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .shimmer-text {
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Fade In Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Helper for delays */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+
+        /* Ambient Blob Delays */
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
-    "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "three": "https://aistudiocdn.com/three@^0.181.2"
-  }
-}
-</script>
 </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<body class="bg-dark-900 text-white">
+
+    <!-- Noise Overlay -->
+    <div class="fixed inset-0 opacity-[0.03] pointer-events-none z-[100] bg-noise mix-blend-overlay"></div>
+
+    <!-- 3D Background Container -->
+    <div id="canvas-container" class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-dark-900/60 to-dark-900 z-10"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 md:py-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-panel rounded-2xl px-4 md:px-6 py-3 md:py-4 bg-dark-900/80 backdrop-blur-md">
+            
+            <!-- Logo / Dropdown -->
+            <div class="relative group">
+                <button id="social-dropdown-btn" class="flex items-center gap-2 focus:outline-none">
+                    <span class="text-white font-display font-bold text-base md:text-lg tracking-tighter hover:text-neon-green transition-colors text-left leading-tight">
+                        PARTNER ENERGÉTICO
+                    </span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-white transition-transform duration-300" id="chevron-icon"></i>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="social-dropdown" class="absolute top-full left-0 mt-2 w-48 bg-dark-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden opacity-0 invisible transition-all duration-300 transform scale-95">
+                    <div class="p-1">
+                        <a href="https://instagram.com/partnerenergetico" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 hover:text-neon-green transition-colors">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                            <span class="text-sm font-medium">@partnerenergetico</span>
+                        </a>
+                        <a href="https://tiktok.com/@partnerenergetico" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 hover:text-neon-green transition-colors">
+                            <!-- Custom TikTok SVG -->
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                            </svg>
+                            <span class="text-sm font-medium">@partnerenergetico</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#" onclick="navigateToSection('servicios')" class="text-sm text-gray-400 hover:text-white transition-colors">Servicios</a>
+                <a href="#" onclick="navigateToSection('proceso')" class="text-sm text-gray-400 hover:text-white transition-colors">Cómo Funciona</a>
+                <a href="#" onclick="navigateToSection('contacto')" class="bg-white text-black px-6 py-2 rounded-full font-semibold text-sm hover:bg-neon-green transition-colors duration-300">Empezar Gratis</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white p-2">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-2 glass-panel rounded-2xl overflow-hidden bg-dark-900/95 backdrop-blur-xl border-white/10 transition-all duration-300">
+            <div class="flex flex-col p-6 gap-6 items-center text-center">
+                <a href="#" onclick="navigateToSection('servicios')" class="text-xl font-display text-white w-full py-2 mobile-link">Servicios</a>
+                <a href="#" onclick="navigateToSection('proceso')" class="text-xl font-display text-white w-full py-2 mobile-link">Cómo Funciona</a>
+                <a href="#" onclick="navigateToSection('contacto')" class="text-xl font-display font-bold text-black bg-neon-green w-full py-3 rounded-full mobile-link">Contactar</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP VIEW -->
+    <main id="view-home">
+        
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 pt-24 pb-12 md:pt-20 md:pb-0">
+            <div class="w-full max-w-[1400px] mx-auto relative z-10 text-center reveal active">
+                <div class="flex flex-col items-center">
+                    <div class="inline-block px-4 py-1 rounded-full border border-neon-green/30 bg-neon-green/5 text-neon-green text-[10px] md:text-xs font-bold tracking-widest mb-6 md:mb-8 backdrop-blur-md">
+                        AUDITORÍA 100% GRATUITA
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-5xl md:text-7xl lg:text-9xl font-display font-bold leading-[1.1] md:leading-[0.9] mb-6 md:mb-8 tracking-tight break-words w-full">
+                        TU ENERGÍA, <br />
+                        <span class="shimmer-text bg-gradient-to-r from-white via-gray-400 to-white bg-[length:200%_auto] animate-text-shimmer text-transparent bg-clip-text block md:inline my-2 md:my-0 whitespace-nowrap text-[6.5vw] sm:text-5xl md:text-inherit leading-tight">
+                            INTELIGENTEMENTE
+                        </span> <br class="hidden md:block" />
+                        GESTIONADA
+                    </h1>
+                    
+                    <p class="text-base md:text-xl text-gray-400 max-w-xs md:max-w-4xl mx-auto mb-10 md:mb-12 leading-relaxed">
+                        Analizamos tus facturas, ajustamos potencias y negociamos precios con más de 50 comercializadoras. Sin costes, sin compromiso.
+                    </p>
+                    
+                    <button id="open-modal-btn" class="px-8 py-4 md:px-12 md:py-5 bg-white text-black font-bold rounded-full hover:bg-neon-green transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(204,255,0,0.4)] cursor-pointer z-20 text-base md:text-lg tracking-wide">
+                        Empezar Gratis
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Wrapper with Ambient Lights -->
+        <div class="relative overflow-hidden">
+            
+            <!-- Ambient Background Blobs -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                <div class="absolute top-[5%] left-[-20%] md:left-[10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-neon-green/10 rounded-full blur-[80px] md:blur-[120px] animate-blob opacity-30 md:opacity-50"></div>
+                <div class="absolute top-[35%] right-[-20%] md:right-[10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-neon-purple/10 rounded-full blur-[80px] md:blur-[120px] animate-blob animation-delay-2000 opacity-30 md:opacity-40"></div>
+                <div class="absolute bottom-[15%] left-[10%] md:left-[20%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-neon-cyan/10 rounded-full blur-[80px] md:blur-[120px] animate-blob animation-delay-4000 opacity-30 md:opacity-50"></div>
+            </div>
+
+            <!-- About Section -->
+            <section id="nosotros" class="py-16 md:py-24 px-4 sm:px-6 relative bg-dark-800/20 border-t border-white/5">
+                <div class="w-full max-w-[1400px] mx-auto">
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-20 md:mb-32">
+                        <!-- Stat 1 -->
+                        <div class="text-center p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-neon-green/30 transition-all duration-300 group hover:-translate-y-1 reveal">
+                            <div class="w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-5 rounded-full bg-neon-green/10 flex items-center justify-center text-neon-green group-hover:scale-110 transition-transform duration-300 border border-neon-green/20">
+                                <i data-lucide="users" class="w-6 h-6 md:w-7 md:h-7"></i>
+                            </div>
+                            <div class="text-4xl md:text-5xl font-display font-bold text-white mb-2">+100K</div>
+                            <div class="text-neon-green font-medium uppercase tracking-wider text-xs md:text-sm mb-2 md:mb-3">Clientes Satisfechos</div>
+                            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Clientes confían en nosotros</p>
+                        </div>
+                        <!-- Stat 2 -->
+                        <div class="text-center p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-neon-green/30 transition-all duration-300 group hover:-translate-y-1 reveal delay-100">
+                            <div class="w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-5 rounded-full bg-neon-green/10 flex items-center justify-center text-neon-green group-hover:scale-110 transition-transform duration-300 border border-neon-green/20">
+                                <i data-lucide="award" class="w-6 h-6 md:w-7 md:h-7"></i>
+                            </div>
+                            <div class="text-4xl md:text-5xl font-display font-bold text-white mb-2">+15</div>
+                            <div class="text-neon-green font-medium uppercase tracking-wider text-xs md:text-sm mb-2 md:mb-3">Años de Experiencia</div>
+                            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Experiencia acumulada en el sector</p>
+                        </div>
+                        <!-- Stat 3 -->
+                        <div class="text-center p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-neon-green/30 transition-all duration-300 group hover:-translate-y-1 reveal delay-200">
+                            <div class="w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-5 rounded-full bg-neon-green/10 flex items-center justify-center text-neon-green group-hover:scale-110 transition-transform duration-300 border border-neon-green/20">
+                                <i data-lucide="globe" class="w-6 h-6 md:w-7 md:h-7"></i>
+                            </div>
+                            <div class="text-4xl md:text-5xl font-display font-bold text-white mb-2">17</div>
+                            <div class="text-neon-green font-medium uppercase tracking-wider text-xs md:text-sm mb-2 md:mb-3">Comunidades</div>
+                            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Cobertura nacional completa</p>
+                        </div>
+                        <!-- Stat 4 -->
+                        <div class="text-center p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-neon-green/30 transition-all duration-300 group hover:-translate-y-1 reveal delay-300">
+                            <div class="w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-5 rounded-full bg-neon-green/10 flex items-center justify-center text-neon-green group-hover:scale-110 transition-transform duration-300 border border-neon-green/20">
+                                <i data-lucide="percent" class="w-6 h-6 md:w-7 md:h-7"></i>
+                            </div>
+                            <div class="text-4xl md:text-5xl font-display font-bold text-white mb-2">25%</div>
+                            <div class="text-neon-green font-medium uppercase tracking-wider text-xs md:text-sm mb-2 md:mb-3">Ahorro Medio</div>
+                            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Reducción media en la factura anual</p>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
+                        <!-- Card 1 -->
+                        <div class="glass-panel p-6 md:p-8 lg:p-10 rounded-3xl border border-white/5 relative overflow-hidden group hover:bg-white/5 transition-colors duration-300 reveal">
+                            <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                                <i data-lucide="trending-up" class="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-display font-bold text-white mb-4 md:mb-6 group-hover:text-neon-green transition-colors">Nuestra Trayectoria</h3>
+                                <p class="text-gray-400 mb-6 md:mb-8 leading-relaxed h-auto md:min-h-[80px] text-base md:text-lg">
+                                    Con más de 15 años de experiencia en el sector energético, hemos ayudado a más de 100.000 clientes a optimizar sus facturas de luz.
+                                </p>
+                                <ul class="space-y-3 md:space-y-4">
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Expertos en análisis de consumo</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Especialistas en tarifas energéticas</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Profesionales con amplia experiencia</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                         <!-- Card 2 -->
+                        <div class="glass-panel p-6 md:p-8 lg:p-10 rounded-3xl border border-white/5 relative overflow-hidden group hover:bg-white/5 transition-colors duration-300 reveal delay-100">
+                            <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                                <i data-lucide="target" class="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-display font-bold text-white mb-4 md:mb-6 group-hover:text-neon-green transition-colors">Nuestra Misión</h3>
+                                <p class="text-gray-400 mb-6 md:mb-8 leading-relaxed h-auto md:min-h-[80px] text-base md:text-lg">
+                                    Facilitar la transición sostenible de las organizaciones mediante soluciones energéticas integrales y personalizadas.
+                                </p>
+                                <ul class="space-y-3 md:space-y-4">
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Optimizar el consumo energético</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Reducir el impacto ambiental</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Alinear con objetivos de sostenibilidad</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                         <!-- Card 3 -->
+                        <div class="glass-panel p-6 md:p-8 lg:p-10 rounded-3xl border border-white/5 relative overflow-hidden group hover:bg-white/5 transition-colors duration-300 reveal delay-200">
+                            <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                                <i data-lucide="map" class="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-display font-bold text-white mb-4 md:mb-6 group-hover:text-neon-green transition-colors">Nuestro Alcance</h3>
+                                <p class="text-gray-400 mb-6 md:mb-8 leading-relaxed h-auto md:min-h-[80px] text-base md:text-lg">
+                                    Trabajamos en todas las comunidades autónomas de España, llevando nuestro servicio a todo el territorio nacional.
+                                </p>
+                                <ul class="space-y-3 md:space-y-4">
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>17 comunidades autónomas</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Cobertura nacional</span></li>
+                                    <li class="flex items-start gap-3 text-gray-300 text-sm md:text-base"><i data-lucide="check-circle" class="w-5 h-5 text-neon-green mt-0.5 opacity-70"></i><span>Servicio adaptado a cada región</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="servicios" class="py-20 md:py-32 px-4 sm:px-6 relative scroll-mt-12">
+                <div class="w-full max-w-[1400px] mx-auto">
+                    <div class="mb-12 md:mb-20 text-center reveal">
+                        <h2 class="text-3xl md:text-6xl font-display font-bold mb-4 md:mb-6">
+                            Soluciones <br class="md:hidden"/>
+                            <span class="shimmer-text bg-gradient-to-r from-neon-green via-white to-neon-green bg-[length:200%_auto] animate-text-shimmer text-transparent bg-clip-text">
+                                Integrales 360°
+                            </span>
+                        </h2>
+                        <p class="text-gray-400 text-sm md:text-lg max-w-2xl mx-auto">
+                            Desde la auditoría inicial hasta la implementación de tecnologías renovables. Todo lo que tu empresa necesita.
+                        </p>
+                    </div>
+
+                    <!-- Services Grid (Dynamically Generated in JS or Static HTML here) -->
+                    <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+                        <!-- Rendered via JS for cleaner HTML or keeping static list -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Process Section -->
+            <section id="proceso" class="py-20 md:py-32 px-4 sm:px-6 relative bg-dark-800/20">
+                <div class="w-full max-w-[1200px] mx-auto">
+                    <div class="text-center mb-16 md:mb-24 reveal">
+                        <h2 class="text-3xl md:text-5xl font-display font-bold mb-3 md:mb-4">¿Cómo Funciona?</h2>
+                        <p class="text-gray-400 text-sm md:text-base">Cuatro pasos simples hacia la eficiencia energética.</p>
+                    </div>
+
+                    <div class="relative" id="process-container">
+                        <!-- Base Line -->
+                        <div class="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-px bg-white/10 transform md:-translate-x-1/2"></div>
+                        <!-- Neon Line (Height controlled by JS) -->
+                        <div id="process-line" class="absolute left-[20px] md:left-1/2 top-0 w-px bg-neon-green shadow-[0_0_15px_rgba(204,255,0,0.8)] transform md:-translate-x-1/2 origin-top z-0 h-0"></div>
+
+                        <div class="space-y-16 md:space-y-24 pb-12 md:pb-24" id="steps-container">
+                            <!-- Steps will be monitored by JS for coloring -->
+                            <!-- Step 1 -->
+                            <div class="process-step flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-24 md:flex-row-reverse">
+                                <div class="flex-1 pl-16 md:pl-0 w-full reveal">
+                                    <div class="step-card glass-panel p-6 md:p-8 rounded-2xl border border-white/5 opacity-50 md:text-right transition-all duration-500">
+                                        <h3 class="text-xl md:text-2xl font-display font-bold mb-2 text-gray-500 transition-colors duration-300">Contáctanos</h3>
+                                        <p class="text-gray-400 leading-relaxed text-sm md:text-base">Rellena el formulario con tus datos básicos. Te contactaremos en menos de 24h para solicitar lo necesario.</p>
+                                    </div>
+                                </div>
+                                <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center z-10">
+                                    <div class="step-node w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 bg-dark-900 border-gray-800 grayscale opacity-30 scale-90">
+                                        <i data-lucide="user-plus" class="w-5 h-5 text-gray-600 transition-colors duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 hidden md:block"></div>
+                            </div>
+                             <!-- Step 2 -->
+                            <div class="process-step flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-24">
+                                <div class="flex-1 pl-16 md:pl-0 w-full reveal">
+                                    <div class="step-card glass-panel p-6 md:p-8 rounded-2xl border border-white/5 opacity-50 md:text-left transition-all duration-500">
+                                        <h3 class="text-xl md:text-2xl font-display font-bold mb-2 text-gray-500 transition-colors duration-300">Análisis Profundo</h3>
+                                        <p class="text-gray-400 leading-relaxed text-sm md:text-base">Nuestro equipo estudia tu consumo y potencias actuales para encontrar cada céntimo de ahorro posible.</p>
+                                    </div>
+                                </div>
+                                <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center z-10">
+                                    <div class="step-node w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 bg-dark-900 border-gray-800 grayscale opacity-30 scale-90">
+                                        <i data-lucide="search" class="w-5 h-5 text-gray-600 transition-colors duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 hidden md:block"></div>
+                            </div>
+                             <!-- Step 3 -->
+                             <div class="process-step flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-24 md:flex-row-reverse">
+                                <div class="flex-1 pl-16 md:pl-0 w-full reveal">
+                                    <div class="step-card glass-panel p-6 md:p-8 rounded-2xl border border-white/5 opacity-50 md:text-right transition-all duration-500">
+                                        <h3 class="text-xl md:text-2xl font-display font-bold mb-2 text-gray-500 transition-colors duration-300">Propuesta de Ahorro</h3>
+                                        <p class="text-gray-400 leading-relaxed text-sm md:text-base">Te presentamos un informe detallado con el ahorro anual estimado. Tú decides si lo aplicas.</p>
+                                    </div>
+                                </div>
+                                <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center z-10">
+                                    <div class="step-node w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 bg-dark-900 border-gray-800 grayscale opacity-30 scale-90">
+                                        <i data-lucide="file-check" class="w-5 h-5 text-gray-600 transition-colors duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 hidden md:block"></div>
+                            </div>
+                             <!-- Step 4 -->
+                             <div class="process-step flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-24">
+                                <div class="flex-1 pl-16 md:pl-0 w-full reveal">
+                                    <div class="step-card glass-panel p-6 md:p-8 rounded-2xl border border-white/5 opacity-50 md:text-left transition-all duration-500">
+                                        <h3 class="text-xl md:text-2xl font-display font-bold mb-2 text-gray-500 transition-colors duration-300">Implementación</h3>
+                                        <p class="text-gray-400 leading-relaxed text-sm md:text-base">Nos encargamos de todos los trámites administrativos. Empiezas a pagar menos desde la siguiente factura.</p>
+                                    </div>
+                                </div>
+                                <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center z-10">
+                                    <div class="step-node w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 bg-dark-900 border-gray-800 grayscale opacity-30 scale-90">
+                                        <i data-lucide="piggy-bank" class="w-5 h-5 text-gray-600 transition-colors duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 hidden md:block"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Form Section -->
+            <section id="contacto" class="py-20 md:py-32 px-4 sm:px-6 relative overflow-hidden scroll-mt-12">
+                <div class="absolute bottom-0 left-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-neon-purple/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none"></div>
+                
+                <div class="w-full max-w-6xl mx-auto relative z-10">
+                    <div class="glass-panel p-6 md:p-16 rounded-3xl border border-white/10 backdrop-blur-xl bg-dark-900/60 reveal">
+                        <div class="text-center mb-8 md:mb-12">
+                            <h2 class="text-3xl md:text-5xl font-display font-bold mb-3 md:mb-4">Empieza a Ahorrar Hoy</h2>
+                            <p class="text-gray-300 text-sm md:text-lg max-w-2xl mx-auto">
+                                Déjanos tus datos y en un plazo de 24 horas, te contactaremos para pedir tu factura y realizar el estudio.
+                            </p>
+                        </div>
+
+                        <form name="contact" method="POST" data-netlify="true" class="space-y-6 md:space-y-8">
+                            <input type="hidden" name="form-name" value="contact">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                <div class="group relative">
+                                    <input type="text" name="name" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-base md:text-lg" placeholder="Tu nombre" id="name">
+                                    <label for="name" class="absolute left-0 -top-3.5 text-xs text-gray-500 transition-all peer-placeholder-shown:text-base md:peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 md:peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-neon-green">NOMBRE</label>
+                                </div>
+                                <div class="group relative">
+                                    <input type="text" name="company" class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-base md:text-lg" placeholder="Empresa" id="company">
+                                    <label for="company" class="absolute left-0 -top-3.5 text-xs text-gray-500 transition-all peer-placeholder-shown:text-base md:peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 md:peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-neon-green">EMPRESA (OPCIONAL)</label>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                <div class="group relative">
+                                    <input type="email" name="email" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-base md:text-lg" placeholder="Email" id="email">
+                                    <label for="email" class="absolute left-0 -top-3.5 text-xs text-gray-500 transition-all peer-placeholder-shown:text-base md:peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 md:peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-neon-green">EMAIL</label>
+                                </div>
+                                <div class="group relative">
+                                    <input type="tel" name="phone" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-base md:text-lg" placeholder="Teléfono" id="phone">
+                                    <label for="phone" class="absolute left-0 -top-3.5 text-xs text-gray-500 transition-all peer-placeholder-shown:text-base md:peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 md:peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-neon-green">TELÉFONO</label>
+                                </div>
+                            </div>
+
+                            <div class="group relative">
+                                <textarea rows="4" name="message" class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors resize-none placeholder-transparent text-base md:text-lg" placeholder="Mensaje" id="message"></textarea>
+                                <label for="message" class="absolute left-0 -top-3.5 text-xs text-gray-500 transition-all peer-placeholder-shown:text-base md:peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 md:peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-neon-green">MENSAJE</label>
+                            </div>
+
+                            <div class="pt-6 flex justify-center">
+                                <button type="submit" class="w-full md:w-auto bg-white text-black px-8 py-4 md:px-12 md:py-5 rounded-full font-display font-bold text-base md:text-lg hover:bg-neon-green transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(204,255,0,0.4)]">
+                                    SOLICITAR AUDITORÍA GRATUITA
+                                </button>
+                            </div>
+                            <p class="text-center text-[10px] md:text-xs text-gray-600 mt-4">
+                                Al enviar este formulario, aceptas nuestra política de privacidad.
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- LEGAL VIEWS (Hidden by default) -->
+    <div id="legal-views-container" class="hidden min-h-screen pt-32 pb-20 px-6 relative">
+         <!-- Content injected by JS -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-12 px-6 relative z-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+                <div class="text-center md:text-left">
+                    <h3 class="text-2xl font-display font-bold text-white mb-2">PARTNER ENERGÉTICO</h3>
+                    <p class="text-gray-500 text-sm">Optimizando tus recursos, maximizando tu ahorro.</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <a href="https://instagram.com/partnerenergetico" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neon-purple hover:text-white transition-all duration-300 text-gray-400">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://tiktok.com/@partnerenergetico" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neon-cyan hover:text-black transition-all duration-300 text-gray-400">
+                         <!-- Custom TikTok SVG -->
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                        </svg>
+                    </a>
+                    <a href="mailto:energialfred@gmail.com" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neon-green hover:text-black transition-all duration-300 text-gray-400">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="#" onclick="showLegal('legal')" class="hover:text-neon-green transition-colors">Aviso Legal</a>
+                    <a href="#" onclick="showLegal('privacy')" class="hover:text-neon-green transition-colors">Política de Privacidad</a>
+                    <a href="#" onclick="showLegal('cookies')" class="hover:text-neon-green transition-colors">Política de Cookies</a>
+                    <a href="#" onclick="showLegal('terms')" class="hover:text-neon-green transition-colors">Condiciones de Uso</a>
+                </div>
+                <p>© <span id="year"></span> Partner Energético. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL POPUP -->
+    <div id="contact-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center px-4 md:px-8">
+        <!-- Backdrop -->
+        <div id="modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        
+        <!-- Content -->
+        <div id="modal-content" class="relative w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-10 border border-white/10 bg-dark-900 max-h-[90vh] overflow-y-auto shadow-2xl shadow-neon-green/10 transform scale-90 opacity-0 transition-all duration-300">
+            <button id="close-modal-btn" class="absolute top-4 right-4 md:top-6 md:right-6 text-gray-400 hover:text-white transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10 z-10">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6 md:mb-8">
+                <h3 class="text-2xl md:text-3xl font-display font-bold mb-2 md:mb-3">Solicitar Estudio Gratuito</h3>
+                <p class="text-gray-400 text-xs md:text-sm">Completa tus datos y te contactaremos en 24h.</p>
+            </div>
+
+            <form name="contact-modal" method="POST" data-netlify="true" class="space-y-4 md:space-y-6">
+                <input type="hidden" name="form-name" value="contact-modal">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="group relative">
+                        <input type="text" name="name" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-sm md:text-base" placeholder="Tu nombre" id="modal-name">
+                        <label for="modal-name" class="absolute left-0 -top-3.5 text-[10px] text-gray-500 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-neon-green">NOMBRE</label>
+                    </div>
+                    <div class="group relative">
+                        <input type="text" name="company" class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-sm md:text-base" placeholder="Empresa" id="modal-company">
+                        <label for="modal-company" class="absolute left-0 -top-3.5 text-[10px] text-gray-500 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-neon-green">EMPRESA (OPCIONAL)</label>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="group relative">
+                        <input type="email" name="email" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-sm md:text-base" placeholder="Email" id="modal-email">
+                        <label for="modal-email" class="absolute left-0 -top-3.5 text-[10px] text-gray-500 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-neon-green">EMAIL</label>
+                    </div>
+                    <div class="group relative">
+                        <input type="tel" name="phone" required class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors placeholder-transparent text-sm md:text-base" placeholder="Teléfono" id="modal-phone">
+                        <label for="modal-phone" class="absolute left-0 -top-3.5 text-[10px] text-gray-500 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-neon-green">TELÉFONO</label>
+                    </div>
+                </div>
+                <div class="group relative">
+                    <textarea rows="3" name="message" class="peer w-full bg-transparent border-b border-gray-700 py-2 md:py-3 text-white focus:outline-none focus:border-neon-green transition-colors resize-none placeholder-transparent text-sm md:text-base" placeholder="Mensaje" id="modal-message"></textarea>
+                    <label for="modal-message" class="absolute left-0 -top-3.5 text-[10px] text-gray-500 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-neon-green">MENSAJE</label>
+                </div>
+                <div class="pt-4 flex justify-center">
+                    <button type="submit" class="w-full bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-display font-bold text-base md:text-lg hover:bg-neon-green transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]">ENVIAR SOLICITUD</button>
+                </div>
+                <p class="text-center text-[10px] text-gray-600 mt-2">Al enviar, aceptas nuestra política de privacidad.</p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
